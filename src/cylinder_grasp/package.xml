@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>cylinder_grasp</name>
+  <version>1.0.0</version>
+  <description>ROS-based cylinder grasping controller using MuJoCo simulation</description>
+
+  <maintainer email="your.email@example.com">Your Name</maintainer>
+
+  <license>MIT</license>
+
+  <author email="your.email@example.com">Your Name</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <test_depend>rosunit</test_depend>
+  <test_depend>rostest</test_depend>
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>

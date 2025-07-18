@@ -1,0 +1,61 @@
+<launch>
+    <!-- Launch arguments -->
+    <arg name="use_rviz" default="false" />
+    <arg name="debug" default="false" />
+    <arg name="auto_start_viewer" default="true" />
+    <arg name="control_rate" default="100" />
+    <arg name="simulation_rate" default="100" />
+    <arg name="model_path" default="$(find cylinder_grasp)/models/scene_right_cylinder.xml" />
+
+    <!-- ROS Cylinder Grasping Controller -->
+    <node name="cylinder_grasping_controller" pkg="cylinder_grasp" type="ros_cylinder_grasp.py" output="screen">
+        <!-- Parameters -->
+        <param name="model_path" value="$(arg model_path)" />
+        <param name="control_rate" value="$(arg control_rate)" />
+        <param name="simulation_rate" value="$(arg simulation_rate)" />
+        <param name="auto_start_viewer" value="$(arg auto_start_viewer)" />
+        <param name="debug_mode" value="$(arg debug)" />
+        
+        <!-- Remap topics if needed -->
+        <remap from="/joint_states" to="/cylinder_grasp/joint_states" />
+        <remap from="/cylinder_pose" to="/cylinder_grasp/cylinder_pose" />
+        <remap from="/grasp_status" to="/cylinder_grasp/grasp_status" />
+        <remap from="/debug_info" to="/cylinder_grasp/debug_info" />
+        <remap from="/hand_joint_commands" to="/cylinder_grasp/hand_joint_commands" />
+        <remap from="/hand_position_commands" to="/cylinder_grasp/hand_position_commands" />
+    </node>
+    
+    <!-- Optional: Joint state publisher for testing -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if="$(arg debug)">
+        <param name="use_gui" value="true" />
+    </node>
+    
+    <!-- Optional: Robot state publisher for visualization -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" if="$(arg use_rviz)">
+        <remap from="/joint_states" to="/cylinder_grasp/joint_states" />
+    </node>
+    
+    <!-- Optional: RViz for visualization -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cylinder_grasp)/config/cylinder_grasp.rviz" if="$(arg use_rviz)" />
+    
+    <!-- Optional: Start test node -->
+    <node name="cylinder_grasp_tester" pkg="cylinder_grasp" type="test_cylinder_grasp.py" output="screen" if="$(arg debug)">
+        <param name="auto_mode" value="false" />
+    </node>
+    
+    <!-- Optional: RQT tools for debugging -->
+    <group if="$(arg debug)">
+        <node name="rqt_graph" pkg="rqt_graph" type="rqt_graph" />
+        <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" args="/cylinder_grasp/debug_info" />
+        <node name="rqt_console" pkg="rqt_console" type="rqt_console" />
+    </group>
+    
+    <!-- Static transform for visualization -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="world_to_base" 
+          args="0 0 0 0 0 0 world base_link" if="$(arg use_rviz)" />
+          
+    <!-- Launch file info -->
+    <group>
+        <param name="launch_info" value="Cylinder Grasp Launch File - Available services: /start_grasp, /reset_grasp, /stop_grasp, /start_viewer, /stop_viewer" />
+    </group>
+</launch>
